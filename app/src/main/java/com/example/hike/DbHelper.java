@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "hike_manager.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2; // bump version because schema changed
 
     public static final String TABLE_HIKES = "hikes";
     public static final String COL_HIKE_ID = "id";
@@ -27,7 +27,8 @@ public class DbHelper extends SQLiteOpenHelper {
                 + "date TEXT,"
                 + "parking TEXT,"
                 + "difficulty TEXT,"
-                + "description TEXT"
+                + "description TEXT,"
+                + "imageUri TEXT"
                 + ");";
 
         String createObs = "CREATE TABLE " + TABLE_OBS + " ("
@@ -52,4 +53,3 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 }
-

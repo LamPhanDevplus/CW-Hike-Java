@@ -1,8 +1,10 @@
 package com.example.hike;
 
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,6 +57,16 @@ public class HikeAdapter extends RecyclerView.Adapter<HikeAdapter.ViewHolder> {
         holder.title.setText(h.toString());
         String subtitle = (h.date == null ? "" : h.date) + (h.difficulty == null ? "" : " • " + h.difficulty);
         holder.subtitle.setText(subtitle);
+        // bind image if present
+        if (h.imageUri != null && !h.imageUri.trim().isEmpty()) {
+            try {
+                holder.image.setImageURI(Uri.parse(h.imageUri));
+            } catch (Exception e) {
+                holder.image.setImageResource(R.mipmap.ic_launcher);
+            }
+        } else {
+            holder.image.setImageResource(R.mipmap.ic_launcher);
+        }
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) listener.onItemClick(h);
         });
@@ -64,12 +76,13 @@ public class HikeAdapter extends RecyclerView.Adapter<HikeAdapter.ViewHolder> {
     public int getItemCount() { return items.size(); }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView image;
         TextView title, subtitle;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            image = itemView.findViewById(R.id.tvItemImage);
             title = itemView.findViewById(R.id.tvItemTitle);
             subtitle = itemView.findViewById(R.id.tvItemSubtitle);
         }
     }
 }
-

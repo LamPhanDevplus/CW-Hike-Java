@@ -24,6 +24,7 @@ public class HikeDao {
         cv.put("parking", hike.parking);
         cv.put("difficulty", hike.difficulty);
         cv.put("description", hike.description);
+        cv.put("imageUri", hike.imageUri);
         long id = db.insert(DbHelper.TABLE_HIKES, null, cv);
         db.close();
         return id;
@@ -38,6 +39,7 @@ public class HikeDao {
         cv.put("parking", hike.parking);
         cv.put("difficulty", hike.difficulty);
         cv.put("description", hike.description);
+        cv.put("imageUri", hike.imageUri);
         int rows = db.update(DbHelper.TABLE_HIKES, cv, "id=?", new String[]{String.valueOf(hike.id)});
         db.close();
         return rows;
@@ -72,6 +74,7 @@ public class HikeDao {
                         c.getString(c.getColumnIndexOrThrow("difficulty")),
                         c.getString(c.getColumnIndexOrThrow("description"))
                 );
+                h.imageUri = c.getString(c.getColumnIndexOrThrow("imageUri"));
             }
             c.close();
         }
@@ -94,6 +97,7 @@ public class HikeDao {
                         c.getString(c.getColumnIndexOrThrow("difficulty")),
                         c.getString(c.getColumnIndexOrThrow("description"))
                 );
+                h.imageUri = c.getString(c.getColumnIndexOrThrow("imageUri"));
                 list.add(h);
             }
             c.close();
@@ -119,6 +123,7 @@ public class HikeDao {
                         c.getString(c.getColumnIndexOrThrow("difficulty")),
                         c.getString(c.getColumnIndexOrThrow("description"))
                 );
+                h.imageUri = c.getString(c.getColumnIndexOrThrow("imageUri"));
                 list.add(h);
             }
             c.close();

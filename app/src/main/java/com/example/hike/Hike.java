@@ -8,6 +8,7 @@ public class Hike {
     public String parking;
     public String difficulty;
     public String description;
+    public String imageUri; // optional image URI as string
 
     public Hike() {}
 
@@ -19,6 +20,7 @@ public class Hike {
         this.parking = parking;
         this.difficulty = difficulty;
         this.description = description;
+        this.imageUri = null;
     }
 
     @Override

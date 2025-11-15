@@ -2,12 +2,14 @@ package com.example.hike;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AlertDialog;
@@ -17,6 +19,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class HikeFormActivity extends AppCompatActivity {
+    private static final int REQ_PICK_IMAGE = 101;
     private HikeDao hikeDao;
     private Hike hike;
 
@@ -29,6 +32,8 @@ public class HikeFormActivity extends AppCompatActivity {
     private EditText description;
     private Button btnSave;
     private Button btnDelete;
+    private Button btnChooseImage;
+    private ImageView imgPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +57,8 @@ public class HikeFormActivity extends AppCompatActivity {
         description = findViewById(R.id.description);
         btnSave = findViewById(R.id.btnSave);
         btnDelete = findViewById(R.id.btnDelete);
-
-        Button navBack = findViewById(R.id.btnNavBack);
-        Button navHome = findViewById(R.id.btnNavHome2);
+        btnChooseImage = findViewById(R.id.btnChooseImage);
+        imgPreview = findViewById(R.id.imgPreview);
 
         // Setup spinner with Low/Medium/High
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
@@ -81,6 +85,13 @@ public class HikeFormActivity extends AppCompatActivity {
             dp.show();
         });
 
+        btnChooseImage.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/*");
+            startActivityForResult(intent, REQ_PICK_IMAGE);
+        });
+
         long id = getIntent().getLongExtra("hikeId", -1);
         if (id != -1) {
             hike = hikeDao.getById(id);
@@ -97,6 +108,11 @@ public class HikeFormActivity extends AppCompatActivity {
                     else if (diff.equalsIgnoreCase("high")) spinnerDifficulty.setSelection(2);
                 }
                 description.setText(hike.description);
+                if (hike.imageUri != null && !hike.imageUri.isEmpty()) {
+                    try {
+                        imgPreview.setImageURI(Uri.parse(hike.imageUri));
+                    } catch (Exception ignored) {}
+                }
                 if (getSupportActionBar() != null) getSupportActionBar().setTitle(hike.name);
             }
         } else {
@@ -118,13 +134,21 @@ public class HikeFormActivity extends AppCompatActivity {
             .setPositiveButton("Delete", (dlg, which) -> performDelete())
             .setNegativeButton("Cancel", null)
             .show());
+    }
 
-        navBack.setOnClickListener(v -> finish());
-        navHome.setOnClickListener(v -> {
-            Intent i = new Intent(HikeFormActivity.this, MainActivity.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(i);
-        });
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                // persist permission for this URI
+                final int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                hike.imageUri = uri.toString();
+                try { imgPreview.setImageURI(uri); } catch (Exception ignored) {}
+            }
+        }
     }
 
     // perform the actual save (validation + insert/update)
