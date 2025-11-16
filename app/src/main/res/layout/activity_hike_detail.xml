@@ -77,13 +77,31 @@
         android:layout_weight="1"
         android:layout_marginTop="8dp" />
 
-    <Button
-        style="@style/PrimaryButton"
-        android:id="@+id/btnAddObs"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Observation"
-        android:layout_marginTop="8dp" />
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <Button
+            style="@style/PrimaryButton"
+            android:id="@+id/btnEditHike"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Edit Hike"
+            android:layout_marginEnd="4dp" />
+
+        <Button
+            style="@style/PrimaryButton"
+            android:id="@+id/btnAddObs"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Add Observation"
+            android:layout_marginStart="4dp" />
+
+    </LinearLayout>
 
     <!-- Bottom navigation -->
     <LinearLayout

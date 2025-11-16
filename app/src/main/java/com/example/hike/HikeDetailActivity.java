@@ -42,6 +42,7 @@ public class HikeDetailActivity extends AppCompatActivity {
             TextView tvDescription = findViewById(R.id.tvDescription);
 
             ListView listObs = findViewById(R.id.listObs);
+            Button btnEditHike = findViewById(R.id.btnEditHike);
             Button btnAddObs = findViewById(R.id.btnAddObs);
 
             Button navBack = findViewById(R.id.btnNavBackDetail);
@@ -86,6 +87,16 @@ public class HikeDetailActivity extends AppCompatActivity {
                 });
             }
 
+            if (btnEditHike != null) btnEditHike.setOnClickListener(v -> {
+                if (hike != null) {
+                    Intent i = new Intent(HikeDetailActivity.this, HikeFormActivity.class);
+                    i.putExtra("hikeId", hike.id);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(HikeDetailActivity.this, "No hike selected", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             if (btnAddObs != null) btnAddObs.setOnClickListener(v -> {
                 if (hike != null) {
                     Intent i = new Intent(HikeDetailActivity.this, ObservationFormActivity.class);
@@ -114,8 +125,28 @@ public class HikeDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Reload hike data in case it was edited
         if (hike != null) {
             try {
+                hike = hikeDao.getById(hike.id);
+
+                // Update all the text views with the latest data
+                TextView tvName = findViewById(R.id.tvName);
+                TextView tvLocation = findViewById(R.id.tvLocation);
+                TextView tvDate = findViewById(R.id.tvDate);
+                TextView tvDifficulty = findViewById(R.id.tvDifficulty);
+                TextView tvDescription = findViewById(R.id.tvDescription);
+
+                if (hike != null) {
+                    if (getSupportActionBar() != null) getSupportActionBar().setTitle(hike.name == null ? "Hike" : hike.name);
+                    if (tvName != null) tvName.setText(safe(hike.name));
+                    if (tvLocation != null) tvLocation.setText(safe(hike.location));
+                    if (tvDate != null) tvDate.setText(safe(hike.date));
+                    if (tvDifficulty != null) tvDifficulty.setText(safe(hike.difficulty));
+                    if (tvDescription != null) tvDescription.setText(safe(hike.description));
+                }
+
                 observations = obsDao.getByHikeId(hike.id);
             } catch (Exception e) {
                 observations = new ArrayList<>();
@@ -123,6 +154,7 @@ public class HikeDetailActivity extends AppCompatActivity {
         } else {
             observations = new ArrayList<>();
         }
+
         if (adapter == null) {
             adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, obsTitles(observations));
             ListView listObs = findViewById(R.id.listObs);
